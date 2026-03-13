@@ -15,7 +15,7 @@ trigger:
 # ----------------------------------------------------------------------------------------------------
 parameters:
   - name: authMode
-    displayName: Authentication Mode (GITHUB_APP | GITHUB_PAT_TOKEN)
+    displayName: GitHub Authentication Mode
     type: string
     values:
       - GITHUB_APP
@@ -30,7 +30,7 @@ parameters:
     type: string
     default: dadabase.azdo.demo
   - name: githubWorkflowFile
-    displayName: GitHub Workflow File
+    displayName: GitHub Workflow File to Start
     type: string
     default: 7-scan-code.yml
 
