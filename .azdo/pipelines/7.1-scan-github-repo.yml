@@ -1,18 +1,14 @@
 # ------------------------------------------------------------------------------------------------------------------------
 # Pipeline to Run Security Scan on a GitHub Repository but triggered from Azure DevOps Pipeline
 # GHAzDO will scan Azure DevOps Repositories but will NOT scan linked GitHub Repositories.
-# You have to trigger a GitHub Action remotely.
-# Ensure secret GITHUB_PAT exists in variable group Dadabase.Demo with permissions to trigger actions in the target GH repo.
+# You have to trigger a GitHub Action remotely with a PAT token.  See stage file for details.
 # ------------------------------------------------------------------------------------------------------------------------
 # See: https://learn.microsoft.com/en-us/azure/devops/repos/security/github-advanced-security-code-scanning?view=azure-devops#codeql-alerts
 # See: https://docs.github.com/en/get-started/learning-about-github/about-github-advanced-security
 # ------------------------------------------------------------------------------------------------------------------------
-name: $(date:yyyy).$(date:MM).$(date:dd)$(rev:.r)
-
+name: $(date:yyyy).$(date:MM).$(date:dd)$(rev:.r) ${{ parameters.githubOwner }}-${{ parameters.githubRepository }} 
 pool:
   vmImage: ubuntu-latest
-
-# ------------------------------------------------------------------------------------------------------------------------
 trigger:
  - none
 

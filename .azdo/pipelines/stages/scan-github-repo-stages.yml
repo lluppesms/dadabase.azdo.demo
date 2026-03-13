@@ -1,15 +1,15 @@
 # ------------------------------------------------------------------------------------------------------------------------
-# Pipeline Stage Template to Trigger and Monitor GitHub Code Scan Workflow
-# This will trigger a GitHub Action remotely.
+# Pipeline Stage Template to Trigger and Monitor GitHub Code Scan Workflow -- this will trigger a GitHub Action remotely.
+# ------------------------------------------------------------------------------------------------------------------------
 # Ensure secret GITHUB_PAT exists in variable group Dadabase.Demo with permissions to trigger actions in the target GH repo.
-# Fine-grained PAT Permissions needed (recommended):
-#   Repository access:
-#   - Select only the target repo (or multiple repos)
-#   Repository permissions:
-#   - Actions: Read and write
-# Classic PAT Permissions needed (if you still use classic tokens):
-#   - repo
-#   - workflow
+#   Fine-grained PAT Permissions needed (recommended):
+#     Repository access:
+#     - Select only the target repo (or multiple repos)
+#     Repository permissions:
+#     - Actions: Read and write
+#   Classic PAT Permissions needed (if you still use classic tokens):
+#     - repo
+#     - workflow
 # ------------------------------------------------------------------------------------------------------------------------
 parameters:
 - name: githubOwner
@@ -21,9 +21,9 @@ parameters:
 - name: githubRef
   default: 'main'
 - name: runMSDevSecOpsScan
-  default: 'false'
+  default: false
 - name: runGHASScan
-  default: 'true'
+  default: true
 
 # ----------------------------------------------------------------------------------------------------
 stages:
@@ -68,7 +68,7 @@ stages:
             exit 1
           fi
 
-          echo "Successfully dispatched ${{ parameters.githubWorkflowFile }} to ${{ parameters.githubOwner }}/${{ parameters.githubRepository }} on ref ${{ parameters.githubRef }}"
+          echo "Successfully dispatched ${{ parameters.githubWorkflowFile }} to ${{ parameters.githubOwner }}/${{ parameters.githubRepository }} on ref ${{ parameters.githubRef }} with runMSDevSecOpsScan: ${{ parameters.runMSDevSecOpsScan }} and runGHASScan: ${{ parameters.runGHASScan }}"
 
           RUNS_API_URL="https://api.github.com/repos/${{ parameters.githubOwner }}/${{ parameters.githubRepository }}/actions/workflows/${{ parameters.githubWorkflowFile }}/runs?event=workflow_dispatch&branch=${{ parameters.githubRef }}&per_page=20"
           RUN_ID=""
