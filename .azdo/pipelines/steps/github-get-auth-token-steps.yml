@@ -10,7 +10,7 @@
 #    - Provide secrets: GITHUB_APP_ID, GITHUB_APP_INSTALLATION_ID, GITHUB_APP_PRIVATE_KEY.
 #    - Minimal app permission for this pipeline: Repository permissions -> Actions: Read and write.
 #    - Install the app on the target repository.
-#
+# ------------------------------------------------------------------------------------------------------------------------
 # Quick steps to create GITHUB_APP_PRIVATE_KEY:
 # 1. GitHub -> Settings -> Developer settings -> GitHub Apps -> New GitHub App.
 #      App name (must be globally unique).
@@ -22,9 +22,9 @@
 #      In the app page, select Install App option.
 #      Choose your account/org, and select 'Only select repositories' (recommended) and select your target repo(s).
 # 5. Collect values for Azure DevOps variable group
-#      GITHUB_APP_ID: # Found on the app’s main settings page.
-#      GITHUB_APP_INSTALLATION_ID: # Open the app installation page in the repo and copy the numeric id from the URL: installations/<id>
-#      GITHUB_APP_PRIVATE_KEY: # Paste the full PEM content into a secret variable. Multiline PEM is fine; escaped newlines also work.
+#      GITHUB_APP_ID = Found on the app’s main settings page.
+#      GITHUB_APP_INSTALLATION_ID = Open the app installation page in the repo and copy the numeric id from the URL: installations/<id>
+#      GITHUB_APP_PRIVATE_KEY = Paste the full PEM content into a secret variable. Replace new lines with '\n' characters and store as a single line. 
 # ------------------------------------------------------------------------------------------------------------------------
 parameters:
 - name: authMode
