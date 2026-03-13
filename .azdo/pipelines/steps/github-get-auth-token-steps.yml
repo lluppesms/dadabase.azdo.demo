@@ -58,6 +58,18 @@ steps:
         printf '%b' "$GITHUB_APP_PRIVATE_KEY" > /tmp/gh-app.pem
         chmod 600 /tmp/gh-app.pem
 
+        if ! grep -q "BEGIN .*PRIVATE KEY" /tmp/gh-app.pem; then
+          echo "GITHUB_APP_PRIVATE_KEY does not look like a valid PEM private key."
+          echo "Store the full .pem content (including BEGIN/END lines) in the secret variable."
+          exit 1
+        fi
+
+        if ! openssl pkey -in /tmp/gh-app.pem -noout >/dev/null 2>&1; then
+          echo "Could not parse private key from GITHUB_APP_PRIVATE_KEY."
+          echo "Ensure the full PEM was copied correctly (multiline or escaped with \\n)."
+          exit 1
+        fi
+
         b64url() {
           openssl base64 -A | tr '+/' '-_' | tr -d '='
         }
