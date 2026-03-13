@@ -73,7 +73,7 @@ stages:
           RUNS_API_URL="https://api.github.com/repos/${{ parameters.githubOwner }}/${{ parameters.githubRepository }}/actions/workflows/${{ parameters.githubWorkflowFile }}/runs?event=workflow_dispatch&branch=${{ parameters.githubRef }}&per_page=20"
           RUN_ID=""
 
-          for attempt in {1..30}; do
+          for attempt in {1..50}; do
             HTTP_CODE=$(curl -sS -o /tmp/gh-runs-response.txt -w "%{http_code}" -X GET "$RUNS_API_URL" \
               -H "Accept: application/vnd.github+json" \
               -H "Authorization: Bearer $GITHUB_PAT" \
@@ -92,7 +92,7 @@ stages:
               break
             fi
 
-            sleep 5
+            sleep 10
           done
 
           if [ -z "$RUN_ID" ]; then
