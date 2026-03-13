@@ -1,0 +1,89 @@
+# ------------------------------------------------------------------------------------------------------------------------
+# GHA Reusable Called Workflow to deploy an already built Function App
+# ------------------------------------------------------------------------------------------------------------------------
+# You need to set up secrets in the GitHub Secrets Repository before running these workflows.
+#   See Docs\CreateGitHubSecrets\.md for details
+# ------------------------------------------------------------------------------------------------------------------------
+name: z_template_functionapp_deploy
+run-name: Deploy Function App
+on:
+  workflow_call:
+    inputs:
+      envCode:
+        required: true
+        type: string
+      functionType:
+        type: string
+        default: 'func'
+      listFilesBeforeDeploy:
+        required: false
+        type: boolean
+        default: true
+
+# ------------------------------------------------------------------------------------------------------------------------
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    
+    environment:
+      name: ${{ inputs.envCode }}
+
+    env:
+      artifactName: functionapp
+      generatedAppEnvName: "${{ inputs.envCode == 'prod' && format('{0}-{1}', vars.APP_NAME, inputs.functionType) || format('{0}{1}-{2}-{3}', vars.APP_NAME, vars.INSTANCE_NUMBER, inputs.functionType, inputs.envCode) }}"
+ 
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ env.artifactName }}
+
+    - name: List Files Before Deploy
+      if: inputs.listFilesBeforeDeploy == true
+      run: 
+        tree ${{ github.action_path }}
+      continue-on-error: true
+  
+    # - name: Create Runtime Variables
+    #   id: vars
+    #   shell: bash
+    #   run: |
+    #     readonly rundatetime=$(date +'%Y-%m-%dT%H:%M:%SZ')
+    #     echo "rundatetime=$rundatetime" >> $GITHUB_OUTPUT
+    #     readonly rundate=$(date +'%Y.%m.%d')
+    #     echo "rundate=$rundate" >> $GITHUB_OUTPUT
+    #     readonly commitbranch=$(echo ${GITHUB_REF#refs/heads/})
+    #     echo "commitbranch=$commitbranch" >> $GITHUB_OUTPUT
+    #     readonly commitsha=${GITHUB_SHA::6}
+    #     echo "commitsha=$commitsha" >> $GITHUB_OUTPUT
+    #   continue-on-error: true
+
+    # - name: Put Build Details in buildinfo.json
+    #   shell: bash
+    #   run: |
+    #     echo -e -n "{\"buildDate\":\"${{ steps.vars.outputs.rundatetime }}\",\"buildNumber\":\"${{ steps.vars.outputs.rundate }}.${{ github.run_number }}\",\"buildId\":\"${{ github.run_id }}.${{ github.run_attempt }}\",\"run_id\":\"${{ github.run_id }}\",\"run_attempt\":\"${{ github.run_attempt }}\",\"run_number\":\"${{ github.run_number }}\",\"branchName\":\"${{ steps.vars.outputs.commitbranch }}\",\"commitHash\":\"${{ steps.vars.outputs.commitsha }}\"}" > ${{ github.action_path }}buildinfo.json
+    #   continue-on-error: true
+
+    - name: Azure Login (Reusable Action)
+      uses: ./.github/actions/login-action
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    - name: Deploy Azure Function Zip
+      uses: Azure/functions-action@v1
+      with:
+        app-name: ${{ env.generatedAppEnvName }}
+        package: .
+
+    - name: Logout and cleanup
+      shell: bash
+      run: |
+        az logout
+        az cache purge
+        az account clear

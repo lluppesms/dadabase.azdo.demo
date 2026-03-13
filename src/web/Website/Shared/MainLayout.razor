@@ -1,0 +1,95 @@
+@using DadABase.Web.Models.Application
+@inherits LayoutComponentBase
+@inject IBuildInfoService BuildInfoService
+@inject IJSRuntime JS
+@inject DadABase.Web.Repositories.ThemeService ThemeService
+@implements IDisposable
+
+<PageTitle>@(isNinetiesTheme ? "The Grand-Dad-A-Base" : Data.Constants.ApplicationTitle)</PageTitle>
+
+<MudThemeProvider />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout Style="height: 91vh;">
+    <MudAppBar Fixed="true" Class="top-bar">
+        <a class="logo hideIfReallyNarrow" href=""><img src="/Favicon.png" height="55" alt="Logo" /></a>
+        <a class="navbar-brand hideIfNarrow" href="" id="headerPageTitle">@(isNinetiesTheme ? "The Grand-Dad-A-Base" : Data.Constants.ApplicationTitle)</a>
+        <NavMenu />
+        <MudSpacer />
+        <div class="navbar-login">
+            <LoginDisplay />
+        </div>
+    </MudAppBar>
+    <MudMainContent Class="LayoutContentContainer">
+        <NinetiesThemeConstructionBanner @ref="ninetiesConstructionBanner" />
+        <div class="LayoutContentStyle">
+            <NinetiesThemeDecorations @ref="ninetiesDecorations" />
+            @Body
+        </div>
+    </MudMainContent>
+</MudLayout>
+
+<div class="LayoutFooterStyle hideIfReallyNarrow" style="position: fixed; bottom: 0; width: 100%; z-index: 1000;">
+    Copyright @thisYear, Luppes Consulting, Inc.
+    <a href="http://www.luppes.com/Privacy" target="_blank">Privacy</a>
+    <a href="http://www.luppes.com/License" target="_blank">License</a>
+    @if (buildInfo is not null)
+    {
+        <span class="build-info">
+            <span class="build-number" title="@FormatBuildDate(buildInfo.BuildDate)">@buildInfo.BuildNumber</span>
+        </span>
+    }
+</div>
+
+@code {
+    int thisYear = DateTime.Today.Year;
+    string assemblyVersionNumber => Assembly.GetEntryAssembly().GetName().Version.ToString();
+    private BuildInfo buildInfo;
+    private NinetiesThemeDecorations ninetiesDecorations;
+    private NinetiesThemeConstructionBanner ninetiesConstructionBanner;
+    private bool isNinetiesTheme = false;
+    private const string ThemeKey = "theme-mode";
+
+    protected override void OnInitialized()
+    {
+        ThemeService.OnThemeChanged += HandleThemeChanged;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        buildInfo = await BuildInfoService.GetBuildInfoAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var theme = await JS.InvokeAsync<string>("localStorage.getItem", ThemeKey);
+            isNinetiesTheme = theme == "nineties";
+            StateHasChanged();
+        }
+    }
+
+    private async void HandleThemeChanged()
+    {
+        var theme = await JS.InvokeAsync<string>("localStorage.getItem", ThemeKey);
+        isNinetiesTheme = theme == "nineties";
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private string FormatBuildDate(string buildDate)
+    {
+        if (DateTime.TryParse(buildDate, out var date))
+        {
+            return $"Compiled {date.ToString("yyyy-MM-dd HH:mm:ss")}";
+        }
+        return buildDate;
+    }
+
+    public void Dispose()
+    {
+        ThemeService.OnThemeChanged -= HandleThemeChanged;
+    }
+}
