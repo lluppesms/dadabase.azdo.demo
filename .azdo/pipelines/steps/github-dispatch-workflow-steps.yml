@@ -15,7 +15,7 @@ parameters:
 - name: runGHASScan
   default: true
 - name: authMode
-  default: 'app'
+  default: 'GITHUB_APP'
 - name: stepName
   default: 'dispatchStep'
 

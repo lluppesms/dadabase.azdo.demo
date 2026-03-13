@@ -18,7 +18,7 @@ parameters:
 - name: runGHASScan
   default: true
 - name: authMode
-  default: 'app' # 'pat' or 'app'
+  default: 'GITHUB_APP' # 'GITHUB_PAT_TOKEN' or 'GITHUB_APP'
 
 # ----------------------------------------------------------------------------------------------------
 stages:

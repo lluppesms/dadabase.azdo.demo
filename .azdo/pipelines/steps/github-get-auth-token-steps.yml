@@ -1,12 +1,12 @@
 # ------------------------------------------------------------------------------------------------------------------------
 # Steps Template: Resolve GitHub API token for PAT or GitHub App authentication modes
 # ------------------------------------------------------------------------------------------------------------------------
-# 1) PAT mode (authMode: pat)
+# 1) PAT mode (authMode: GITHUB_PAT_TOKEN)
 #    - Provide secret GITHUB_PAT in variable group Dadabase.Demo.
 #    - Fine-grained PAT (recommended): select target repos and then add permissions - Actions: R/W
 #    - Classic PAT (legacy): repo + workflow.
 #
-# 2) GitHub App mode (authMode: app) [recommended for better security]
+# 2) GitHub App mode (authMode: GITHUB_APP) [recommended for better security]
 #    - Provide secrets: GITHUB_APP_ID, GITHUB_APP_INSTALLATION_ID, GITHUB_APP_PRIVATE_KEY.
 #    - Minimal app permission for this pipeline: Repository permissions -> Actions: Read and write.
 #    - Install the app on the target repository.
@@ -16,14 +16,14 @@
 # 2. Set repository permission Actions: Read and write, then create the app.
 # 3. Open the app -> Private keys -> Generate a private key (downloads .pem once).
 # 4. Store full PEM contents as secret variable GITHUB_APP_PRIVATE_KEY in Dadabase.Demo.
-# 5. Add GITHUB_APP_ID and GITHUB_APP_INSTALLATION_ID as secrets and run with authMode: app.
+# 5. Add GITHUB_APP_ID and GITHUB_APP_INSTALLATION_ID as secrets and run with authMode: GITHUB_APP.
 # ------------------------------------------------------------------------------------------------------------------------
 parameters:
 - name: authMode
-  default: 'app' # 'pat' or 'app'
+  default: 'GITHUB_APP' # 'GITHUB_PAT_TOKEN' or 'GITHUB_APP'
 
 steps:
-- ${{ if eq(parameters.authMode, 'pat') }}:
+- ${{ if eq(parameters.authMode, 'GITHUB_PAT_TOKEN') }}:
   - displayName: 'Auth: Use PAT token'
     env:
       GITHUB_PAT: $(GITHUB_PAT)
@@ -35,7 +35,7 @@ steps:
       fi
       echo "##vso[task.setvariable variable=GH_API_TOKEN]$GITHUB_PAT"
 
-- ${{ if eq(parameters.authMode, 'app') }}:
+- ${{ if eq(parameters.authMode, 'GITHUB_APP') }}:
   - displayName: 'Auth: Use GitHub App installation token'
     env:
       GITHUB_APP_ID: $(GITHUB_APP_ID)

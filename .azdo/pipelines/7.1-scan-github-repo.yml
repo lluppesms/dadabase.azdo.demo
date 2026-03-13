@@ -15,9 +15,12 @@ trigger:
 # ----------------------------------------------------------------------------------------------------
 parameters:
   - name: authMode
-    displayName: Authentication Mode (pat | app)
+    displayName: Authentication Mode (GITHUB_APP | GITHUB_PAT_TOKEN)
     type: string
-    default: pat
+    values:
+      - GITHUB_APP
+      - GITHUB_PAT_TOKEN
+    default: GITHUB_APP
   - name: githubOwner
     displayName: GitHub Owner
     type: string

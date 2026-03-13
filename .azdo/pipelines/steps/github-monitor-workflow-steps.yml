@@ -7,7 +7,7 @@ parameters:
 - name: githubRepository
   default: ''
 - name: authMode
-  default: 'app'
+  default: 'GITHUB_APP'
 
 steps:
 - displayName: 'Wait for GitHub workflow completion'
