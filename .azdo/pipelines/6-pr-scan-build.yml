@@ -28,3 +28,6 @@ stages:
 - template: stages/webapp-build-stages.yml
   parameters:
     runUnitTests: true
+
+# Include PR Review with LLM stage
+- template: stages/pr-review-llm-stages.yml
