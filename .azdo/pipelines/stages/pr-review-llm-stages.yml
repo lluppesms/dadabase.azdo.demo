@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------------------------------------------------------------
-# Pipeline Template: PR Review with LLM
+# BETA: (Untested!) Pipeline Template: PR Review with LLM
 # ------------------------------------------------------------------------------------------------------------------------
 # This stage summarizes a Pull Request using an LLM (e.g., Azure OpenAI) and outputs the summary to pipeline results.
 #
@@ -25,7 +25,7 @@ stages:
           displayName: Run PR Review with LLM
           inputs:
             targetType: 'filePath'
-            filePath: '.azdo/pipelines/scripts/Review-PrWithLLM.ps1'
+            filePath: '.azdo/pipelines/scripts/Review-PR-Using-LLM.ps1'
             arguments: >
               -Organization "$(System.TeamFoundationCollectionUri)" \
               -Project "$(System.TeamProject)" \
