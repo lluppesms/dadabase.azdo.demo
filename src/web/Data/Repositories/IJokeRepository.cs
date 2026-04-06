@@ -24,6 +24,15 @@ public interface IJokeRepository
     IQueryable<Joke> ListAll(string activeInd = "Y", string requestingUserName = "ANON");
 
     /// <summary>
+    /// Returns the most recently added jokes, limited to the specified count.
+    /// For SQL repositories, results are ordered by <see cref="Joke.CreateDateTime"/> descending.
+    /// For JSON repositories, the first <paramref name="count"/> entries are returned.
+    /// </summary>
+    /// <param name="count">The maximum number of jokes to return. The default is 100.</param>
+    /// <returns>An <see cref="IQueryable{T}"/> of the most recent <see cref="Joke"/> records.</returns>
+    IQueryable<Joke> GetRecentAdditions(int count = 100);
+
+    /// <summary>
     /// Finds a specific joke by its identifier.
     /// </summary>
     /// <param name="id">The identifier of the joke.</param>
@@ -71,11 +80,18 @@ public interface IJokeRepository
     string ExportToSql(string requestingUserName = "ANON");
 
     /// <summary>
-    /// Exports all jokes to a tab-delimited text format with fields: JokeId, Categories, JokeTxt, ImageTxt, Attribution, Rating, VoteCount.
+    /// Exports all jokes to a tab-delimited text format with fields: JokeId, Categories, JokeTxt, ImageTxt, Attribution, ActiveInd, SortOrderNbr, Rating, VoteCount.
     /// </summary>
     /// <param name="requestingUserName">The username of the user requesting the export. The default is "ANON".</param>
     /// <returns>A string containing the tab-delimited content including a header row.</returns>
     string ExportToTabDelimited(string requestingUserName = "ANON");
+
+    /// <summary>
+    /// Exports all jokes to a JSON array format with fields: JokeId, Categories, JokeTxt, ImageTxt, Attribution, ActiveInd, SortOrderNbr, Rating, VoteCount.
+    /// </summary>
+    /// <param name="requestingUserName">The username of the user requesting the export. The default is "ANON".</param>
+    /// <returns>A string containing the JSON array of joke objects.</returns>
+    string ExportToJson(string requestingUserName = "ANON");
 
     /// <summary>
     /// Imports jokes from a tab-delimited text string into the database. Parses the rows in C#,
